@@ -23,7 +23,7 @@ map <-leaflet(map_data) %>%
 
 map
 
-saveWidget(map,file=file.path(Path_Directory,"foundation.html"),selfcontained=TRUE,title = "foundation")
+saveWidget(map,file="foundation.html",selfcontained=TRUE,title = "foundation")
 
 
 
