@@ -45,6 +45,10 @@ foundation_data <- read_excel("foundation.xlsx", col_types = c("text","text","te
 
 map_data <- sp::merge(map_shape, foundation_data, by="id")
 
+foundation <-subset(map_data,map_data$structure=="foundation")
+
+road <-subset(map_data,map_data$structure=="road")
+
 
 #get uniquev values of status and color 
 
@@ -63,7 +67,7 @@ pal <- colorFactor(
 
 labels <- sprintf(
   "<strong>%s</strong><br/><strong>%s</strong><br/>Progress %g ",
-  map_data$description,map_data$status,map_data$progress
+  foundation$description,foundation$status,foundation$progress
 ) %>% lapply(htmltools::HTML)
 
 #Draw the map
@@ -74,13 +78,21 @@ map <-leaflet(map_data) %>%
   
   addTiles(urlTemplate = "https://mts1.google.com/vt/lyrs=s&hl=en&src=app&x={x}&y={y}&z={z}&s=G", attribution = 'Google') %>%
   
-  addPolygons(fillOpacity = 1,color=map_data$color,label = labels)%>%
+  addPolygons(data=foundation,fillOpacity = 1,color=foundation$color,label = labels,group="foundation")%>%
+  
+  addPolygons(data=road,fillOpacity = 1,color=road$color,group="road")%>%
   
   addCircleMarkers(lng = pile$x, lat = pile$y,radius = 3,group="pile")%>%
   
   addLegend(pal = pal, values = chartlegend$status, opacity = 1) %>%
 
-  groupOptions("pile", zoomLevels = 18:21)
+  groupOptions("pile", zoomLevels = 18:21) %>%
+  
+  addLayersControl(position="topleft",
+                 overlayGroups = c("road","foundation"),
+                 options = layersControlOptions(collapsed = FALSE)
+                  )
+  
 
 map
 
@@ -103,3 +115,37 @@ table
 
 ```
 
+
+charts
+=====================================
+
+
+
+```{python,python.reticulate = FALSE}
+
+import altair as alt
+import pandas as pd
+df=pd.read_csv("qty.csv",parse_dates=[0], dayfirst=True)
+select_box = alt.binding_select(options=list(df['category'].unique()))
+selection = alt.selection_single(name='y_axis', fields=['category'], bind=select_box)
+
+chart= alt.Chart(df).mark_bar().encode(
+    x=alt.X("date:O", timeUnit="yearmonthdate", axis=alt.Axis(format="%d %b %y")),
+    y='sum(Installed_qty)',
+    color='category',
+    tooltip=['sum(Installed_qty)']
+).add_selection(
+    selection
+).transform_filter(
+    selection
+).properties(width=1200, height=600
+)
+
+chart.save('commodity.html')
+
+```
+
+```{r}
+shiny::includeHTML("commodity.html") 
+file.remove("commodity.html")
+```
