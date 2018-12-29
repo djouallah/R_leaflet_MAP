@@ -35,7 +35,6 @@ pile <- filter(pile_file,pile_file$status !="Not Started")
 
 map_shape <- geojsonio::geojson_read("foundation.json",what = "sp")
 
-
 #read foundation  data status 
 
 foundation_data <- read_excel("foundation.xlsx", col_types = c("text","text","text", "numeric", "text","text"))
