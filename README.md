@@ -1,2 +1,5 @@
 # R_leaflet_MAP
-playing around with R and Leaflet
+simple example of using flexdashboard
+leaflet for maps
+datatable for table
+altair for interactive charts (python)
