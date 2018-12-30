@@ -10,8 +10,61 @@ output:
 ```{r setup, include=FALSE}
 library(flexdashboard)
 ```
+charts(altair)
+=====================================
 
-Site Layout
+
+
+```{python,python.reticulate = FALSE}
+
+import altair as alt
+import pandas as pd
+df=pd.read_csv("qty.csv",parse_dates=[0], dayfirst=True)
+select_box = alt.binding_select(options=list(df['category'].unique()))
+selection = alt.selection_single(name='y_axis', fields=['category'], bind=select_box)
+
+
+
+
+base = alt.Chart(df).encode(x=alt.X("date:O", timeUnit="yearmonthdate",
+                axis=alt.Axis(format="%d %b %y"))).properties(width=1200, height=600)
+
+bar = base.mark_bar().encode(y='sum(Installed_qty)',
+                    tooltip=['sum(Installed_qty)']
+                    ).add_selection(
+    selection 
+    
+).transform_filter(
+    selection
+)
+
+line =  base.mark_line(color='red').encode(
+                                   y='sum(Installed_qty_cumulative)',
+                                   tooltip=['sum(Installed_qty_cumulative)']
+                                   
+                                   ).transform_filter(
+                                   selection
+
+)
+
+chart = alt.layer(
+    bar,
+    line
+     ).resolve_scale(
+    y='independent'
+    )
+
+
+chart.save('commodity.html')
+
+```
+
+```{r echo=FALSE}
+shiny::includeHTML("commodity.html") 
+file.remove("commodity.html")
+```
+
+map (leaflet)
 =====================================
 
 
@@ -34,6 +87,7 @@ pile <- filter(pile_file,pile_file$status !="Not Started")
 #read json
 
 map_shape <- geojsonio::geojson_read("foundation.json",what = "sp")
+
 
 #read foundation  data status 
 
@@ -97,7 +151,7 @@ map
 
 ```
 
-data
+table (datatable)
 =====================================
 
 
@@ -115,36 +169,3 @@ table
 ```
 
 
-charts
-=====================================
-
-
-
-```{python,python.reticulate = FALSE}
-
-import altair as alt
-import pandas as pd
-df=pd.read_csv("qty.csv",parse_dates=[0], dayfirst=True)
-select_box = alt.binding_select(options=list(df['category'].unique()))
-selection = alt.selection_single(name='y_axis', fields=['category'], bind=select_box)
-
-chart= alt.Chart(df).mark_bar().encode(
-    x=alt.X("date:O", timeUnit="yearmonthdate", axis=alt.Axis(format="%d %b %y")),
-    y='sum(Installed_qty)',
-    color='category',
-    tooltip=['sum(Installed_qty)']
-).add_selection(
-    selection
-).transform_filter(
-    selection
-).properties(width=1200, height=600
-)
-
-chart.save('commodity.html')
-
-```
-
-```{r}
-shiny::includeHTML("commodity.html") 
-file.remove("commodity.html")
-```
