@@ -19,41 +19,61 @@ charts(altair)
 
 import altair as alt
 import pandas as pd
-df=pd.read_csv("qty.csv",parse_dates=[0], dayfirst=True)
-select_box = alt.binding_select(options=list(df['category'].unique()))
-selection = alt.selection_single(name='y_axis', fields=['category'], bind=select_box)
+df=pd.read_csv("data/earned.csv",parse_dates=[0], dayfirst=True)
 
+pts = alt.selection(type='multi', encodings=['y'])
 
+barselect = alt.Chart(df).mark_bar().encode(
+    y='category:N',
+    x='sum(earned)',
+    color=alt.condition(pts, alt.ColorValue("steelblue"), alt.ColorValue("grey"))
+).properties(
+    selection=pts,
+    width=550,
+    height=200
+)   
+  
+line_earned = alt.Chart(df).transform_filter(
+    pts
+      ).transform_aggregate(
+    sum_installed_cumulative='sum(earned_cumulative)',
+    sum_planned_cumulative='sum(planned_cumulative)',
+    sum_budget='sum(budget)',
+    sum_Installed_qty='sum(earned)',
+    groupby=['date']
+).transform_calculate(
+    earned_cumulative='datum.sum_installed_cumulative / datum.sum_budget',
+    planned_cumulative='datum.sum_planned_cumulative / datum.sum_budget',
+    period='datum.sum_Installed_qty/ datum.sum_budget*100'
+).mark_line(color='red').encode(
+    x=alt.X("date:O", timeUnit="yearmonthdate",axis=alt.Axis(format="%d %b %y")),
+    y='earned_cumulative:Q'
+)
+bar= line_earned.mark_bar(color='black').encode(
+        y='period:Q'
+)  
+line_planned= line_earned.mark_line(color="green").encode(
+        y='planned_cumulative:Q'
+)  
+text = bar.mark_text(
+    align='center',
+    baseline='middle',
+    dx=3  # Nudges text to right so it doesn't appear on top of the bar
+                ).encode(text='period:Q') 
 
-
-base = alt.Chart(df).encode(x=alt.X("date:O", timeUnit="yearmonthdate",
-                axis=alt.Axis(format="%d %b %y"))).properties(width=1200, height=600)
-
-bar = base.mark_bar().encode(y='sum(Installed_qty)',
-                    tooltip=['sum(Installed_qty)']
-                    ).add_selection(
-    selection 
+combo = alt.layer(
+    bar+ text,
+    line_earned+line_planned
+     ).resolve_scale(y='independent')
     
-).transform_filter(
-    selection
+    
+chart= alt.hconcat(
+    barselect,
+    combo
+).resolve_legend(
+    color="independent",
+    size="independent"
 )
-
-line =  base.mark_line(color='red').encode(
-                                   y='sum(Installed_qty_cumulative)',
-                                   tooltip=['sum(Installed_qty_cumulative)']
-                                   
-                                   ).transform_filter(
-                                   selection
-
-)
-
-chart = alt.layer(
-    bar,
-    line
-     ).resolve_scale(
-    y='independent'
-    )
-
 
 chart.save('commodity.html')
 
@@ -77,7 +97,7 @@ library(htmlwidgets)
 
 #read pile  Data
 
-pile_file <- read_excel("pile.xlsx", col_types = c("text","text", "numeric", "numeric","text","text"))
+pile_file <- read_excel("data/pile.xlsx", col_types = c("text","text", "numeric", "numeric","text","text"))
 
 
 #filter only pile with progress
@@ -91,7 +111,7 @@ map_shape <- geojsonio::geojson_read("foundation.json",what = "sp")
 
 #read foundation  data status 
 
-foundation_data <- read_excel("foundation.xlsx", col_types = c("text","text","text", "numeric", "text","text"))
+foundation_data <- read_excel("data/foundation.xlsx", col_types = c("text","text","text", "numeric", "text","text"))
 
 #merge foundation progress status with the shapefile
 
