@@ -1,0 +1,42 @@
+id,type,status,progress,color,description
+1,foundation,formwork,0.1,blue,foundation 1
+2,foundation,formwork,0.2,blue,foundation 2
+3,foundation,concrete,0.3,red,foundation 3
+4,foundation,concrete,0.4,red,foundation 4
+5,foundation,not started,,gray,foundation 5
+6,foundation,not started,,gray,foundation 6
+7,foundation,excavation,0.6,green,foundation 7
+8,foundation,excavation,0.7,green,foundation 8
+9,foundation,not started,,gray,foundation 9
+10,foundation,not started,,gray,foundation 10
+11,foundation,not started,,gray,foundation 11
+12,foundation,not started,,gray,foundation 12
+13,foundation,not started,,gray,foundation 13
+14,foundation,not started,,gray,foundation 14
+15,foundation,not started,,gray,foundation 15
+16,foundation,not started,,gray,foundation 16
+17,foundation,not started,,gray,foundation 17
+18,foundation,not started,,gray,foundation 18
+19,foundation,not started,,gray,foundation 19
+20,foundation,not started,,gray,foundation 20
+21,foundation,not started,,gray,foundation 21
+22,foundation,piling,0.5,yellow,foundation 22
+23,foundation,not started,,gray,foundation 23
+24,foundation,not started,,gray,foundation 24
+25,foundation,not started,,gray,foundation 25
+26,foundation,not started,,gray,foundation 26
+27,foundation,not started,,gray,foundation 27
+28,foundation,piling,0.5,yellow,foundation 28
+29,foundation,not started,,gray,foundation 29
+30,foundation,not started,,gray,foundation 30
+31,foundation,not started,,gray,foundation 31
+32,foundation,not started,,gray,foundation 32
+33,foundation,not started,,gray,foundation 33
+34,foundation,not started,,gray,foundation 34
+35,foundation,not started,,gray,foundation 35
+36,foundation,not started,,gray,foundation 36
+37,foundation,not started,,gray,foundation 37
+38,foundation,not started,,gray,foundation 38
+39,foundation,not started,,gray,foundation 39
+40,foundation,not started,,gray,foundation 40
+41,road,topsoil,0.9,blue,road 41
